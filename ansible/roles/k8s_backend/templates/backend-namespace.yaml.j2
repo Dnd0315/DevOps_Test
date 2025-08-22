@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Namespace
-meta
-  name: {{ k8s_namespace | default('test') }}
+metadata:
+  name: {{ k8s_namespace | default('devops') }}
   labels:
-    app: {{ k8s_namespace | default('backend') }}
+    app: {{ labels.app | default('backend') }}
 

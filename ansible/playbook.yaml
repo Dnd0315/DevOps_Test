@@ -1,7 +1,12 @@
 - name: Deploy backend microservice to Kubernetes
-  hosts: localhost
-  connection: local
+  hosts: all
+  gather_facts: false
+
+  collections:
+    - kubernetes.core
+
   vars_files:
     - vars/main.yaml
+
   roles:
     - k8s_backend

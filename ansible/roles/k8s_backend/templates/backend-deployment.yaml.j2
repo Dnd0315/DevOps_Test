@@ -1,8 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: backend
-  namespace: {{ k8s_namespace | default('test') }}
+  name: backend-deployment
+  namespace: {{ k8s_namespace | default('devops') }}
   labels:
     app: {{ labels.app | default('backend') }}
 spec:

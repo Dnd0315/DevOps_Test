@@ -1,15 +1,15 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
-meta
+metadata:
   name: backend-hpa
-  namespace: {{ k8s_namespace | default('test') }}
+  namespace: {{ k8s_namespace | default('devops') }}
   labels:
     app: {{ labels.app | default('backend') }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: backend
+    name: backend-deployment
   minReplicas: {{ hpa.minReplicas | default(3) }}
   maxReplicas: {{ hpa.maxReplicas | default(10) }}
   metrics:

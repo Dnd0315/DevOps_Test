@@ -7,12 +7,15 @@
 - name: "Set defaults"
   set_fact:
     k8s_kubeconfig: "{{ k8s_kubeconfig | default(lookup('env','KUBECONFIG')) }}"
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
 
 - name: Render namespace
   template:
     src: "backend-namespace.yaml.j2"
     dest: "{{ playbook_dir }}/.rendered/backend-namespace.yaml"
     mode: "0644"
+  notify: Apply Kubernetes manifests
 
 - name: Ensure namespace exists
   kubernetes.core.k8s:
@@ -52,11 +55,14 @@
     dest: "{{ playbook_dir }}/.rendered/backend-ingress.yaml"
   notify: Apply Kubernetes manifests
 
+- meta: flush_handlers
+
 - name: "Wait for Deployment to be available"
   kubernetes.core.k8s_info:
     api_version: apps/v1
     kind: Deployment
-    name: backend
+    name: backend-deployment
+    namespace: "{{ k8s_namespace }}"
     kubeconfig: "{{ k8s_kubeconfig | default(omit) }}"
   register: deploy_info
   until: >

@@ -1,0 +1,10 @@
+- hosts: localhost
+  connection: local
+  gather_facts: false
+  collections:
+    - kubernetes.core
+  tasks:
+    - name: Create test namespace
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('file', 'test-namespace.yaml') }}"

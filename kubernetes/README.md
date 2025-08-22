@@ -136,7 +136,7 @@ kubectl get crd | grep servicemonitors.monitoring.coreos.com
 kubectl apply -f k8s/backend-servicemonitor.yaml
 ```
 
-6) Check Prometheus targets
+6) Check Prometheus targets but the app does not expose metrics
 ```bash
 kubectl -n monitoring port-forward svc/monitoring-kube-prometheus-prometheus 9090:9090
 # Open http://localhost:9090 > Status > Targets

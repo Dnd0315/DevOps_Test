@@ -1,2 +1,4 @@
 actions-runner/
 .rendered/
+.venv/
+.DS_Store

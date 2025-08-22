@@ -1,2 +1,2 @@
-k8s_namespace: "dev"
+k8s_namespace: dev
 hello_text: "Hello World from dev!"

@@ -14,6 +14,9 @@ python3 -m venv .venv && source .venv/bin/activate
 # install Ansible
 pip install "ansible>=8.0.0"
 
+#install kubernetes python dependencies
+pip install kubernetes
+
 # install Kubernetes collection for Ansible
 ansible-galaxy collection install kubernetes.core
 ```

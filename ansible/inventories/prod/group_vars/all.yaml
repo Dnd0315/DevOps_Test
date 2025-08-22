@@ -1,2 +1,2 @@
-k8s_namespace: "prod"
+k8s_namespace: prod
 hello_text: "Hello World from prod!"

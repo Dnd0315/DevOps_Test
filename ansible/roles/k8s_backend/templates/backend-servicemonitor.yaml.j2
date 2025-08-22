@@ -1,8 +1,8 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ servicemonitor.name | default("backend-servicemonitor") }}
-  namespace: {{ k8s_namespace | default('test') }}
+  name: backend-servicemonitor
+  namespace: {{ k8s_namespace | default('devops') }}
   labels:
     {{ servicemonitor.label_key | default("release") }}: {{ servicemonitor.label_value | default("prometheus") }}
 spec:
@@ -11,7 +11,7 @@ spec:
       app: {{ labels.app | default("backend") }}
   namespaceSelector:
     matchNames:
-      - {{ k8s_namespace | default('test') }}
+      - {{ k8s_namespace | default('devops') }}
   endpoints:
     - port: {{ servicemonitor.port | default("metrics") }}
       path: {{ servicemonitor.path | default("/metrics") }}

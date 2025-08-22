@@ -1,8 +1,8 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ ingress.name | default("backend-ingress") }}
-  namespace: {{ k8s_namespace | default('test') }}
+  name: backend-ingress
+  namespace: {{ k8s_namespace | default('devops') }}
   labels:
     app: {{ labels.app | default('backend') }}
 spec:
