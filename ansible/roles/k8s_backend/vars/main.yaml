@@ -1,0 +1,70 @@
+# Target namespace (can be overridden by the inventory)
+k8s_namespace: "default"
+
+# Text passed to the http-echo container argument (-text=...)
+hello_text: "Hello, World!"
+
+# Default resources for the pod (can be overridden by the inventory)
+resources:
+  requests:
+    cpu: "100m"
+    memory: "64Mi"
+  limits:
+    cpu: "250m"
+    memory: "128Mi"
+
+# Default replicas for the Deployment
+replicas: 3
+
+# HPA configuration
+hpa:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+
+# Probes (liveness/readiness)
+probes:
+  liveness:
+    path: "/"
+    initialDelaySeconds: 5
+    periodSeconds: 10
+  readiness:
+    path: "/"
+    initialDelaySeconds: 2
+    periodSeconds: 5
+
+# Service configuration
+service:
+  name: "backend-service"
+  port: 80
+  targetPort: 5678
+
+# Ingress configuration
+ingress:
+  enabled: true
+  name: "backend-ingress"
+  path: "/api"
+  pathType: "Prefix"
+
+# PDB configuration
+pdb:
+  enabled: true
+  minAvailable: 2
+
+# Kubeconfig (by default, uses KUBECONFIG from the environment if not set)
+k8s_kubeconfig: ""
+
+# Optional labels/annotations
+labels:
+  app: "backend"
+
+servicemonitor:
+  name: backend-servicemonitor
+  label_key: release
+  label_value: prometheus
+  port: metrics
+  path: /metrics
+  interval: 30s
+  scrapeTimeout: 10s
+

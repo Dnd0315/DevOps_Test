@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ servicemonitor.name | default("backend-servicemonitor") }}
+  namespace: {{ k8s_namespace }}
+  labels:
+    {{ servicemonitor.label_key | default("release") }}: {{ servicemonitor.label_value | default("prometheus") }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ labels.app | default("backend") }}
+  namespaceSelector:
+    matchNames:
+      - {{ k8s_namespace }}
+  endpoints:
+    - port: {{ servicemonitor.port | default("metrics") }}
+      path: {{ servicemonitor.path | default("/metrics") }}
+      interval: {{ servicemonitor.interval | default("30s") }}
+      scrapeTimeout: {{ servicemonitor.scrapeTimeout | default("10s") }}

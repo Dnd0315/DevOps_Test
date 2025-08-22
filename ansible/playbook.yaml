@@ -1,0 +1,7 @@
+- name: Deploy backend microservice to Kubernetes
+  hosts: localhost
+  connection: local
+  vars_files:
+    - vars/main.yaml
+  roles:
+    - k8s_backend

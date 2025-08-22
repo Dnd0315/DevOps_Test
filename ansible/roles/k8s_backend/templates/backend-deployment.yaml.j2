@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: {{ k8s_namespace }}
+  labels:
+    app: {{ labels.app | default('backend') }}
+spec:
+  replicas: {{ replicas | default(3) }}
+  selector:
+    matchLabels:
+      app: {{ labels.app | default('backend') }}
+  template:
+    metadata:
+      labels:
+        app: {{ labels.app | default('backend') }}
+    spec:
+      containers:
+        - name: http-echo
+          image: hashicorp/http-echo
+          args:
+            - "-text={{ hello_text }}"
+          ports:
+            - name: http
+              containerPort: {{ service.targetPort | default(5678) }}
+          resources:
+            requests:
+              cpu: {{ resources.requests.cpu | default("100m") | to_json }}
+              memory: {{ resources.requests.memory | default("64Mi") | to_json }}
+            limits:
+              cpu: {{ resources.limits.cpu | default("250m") | to_json }}
+              memory: {{ resources.limits.memory | default("128Mi") | to_json }}
+          livenessProbe:
+            httpGet:
+              path: {{ probes.liveness.path | default("/") }}
+              port: {{ service.targetPort | default(5678) }}
+            initialDelaySeconds: {{ probes.liveness.initialDelaySeconds | default(5) }}
+            periodSeconds: {{ probes.liveness.periodSeconds | default(10) }}
+          readinessProbe:
+            httpGet:
+              path: {{ probes.readiness.path | default("/") }}
+              port: {{ service.targetPort | default(5678) }}
+            initialDelaySeconds: {{ probes.readiness.initialDelaySeconds | default(2) }}
+            periodSeconds: {{ probes.readiness.periodSeconds | default(5) }}

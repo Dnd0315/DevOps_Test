@@ -1,0 +1,12 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+meta
+  name: backend-pdb
+  namespace: {{ k8s_namespace }}
+  labels:
+    app: {{ labels.app | default('backend') }}
+spec:
+  minAvailable: {{ pdb.minAvailable | default(2) }}
+  selector:
+    matchLabels:
+      app: {{ labels.app | default('backend') }}

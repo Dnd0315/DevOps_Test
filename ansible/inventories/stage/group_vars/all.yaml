@@ -1,0 +1,2 @@
+k8s_namespace: "stage"
+hello_text: "Hello World from stage!"

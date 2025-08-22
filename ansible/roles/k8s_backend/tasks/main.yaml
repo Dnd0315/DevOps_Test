@@ -1,0 +1,61 @@
+- name: Ensure render directory exists
+  file:
+    path: "{{ playbook_dir }}/.rendered"
+    state: directory
+    mode: "0755"
+
+- name: "Set defaults"
+  set_fact:
+    k8s_kubeconfig: "{{ k8s_kubeconfig | default(lookup('env','KUBECONFIG')) }}"
+
+- name: Ensure namespace exists
+  kubernetes.core.k8s:
+    api_version: v1
+    kind: Namespace
+    name: "{{ k8s_namespace }}"
+    state: present
+    kubeconfig: "{{ k8s_kubeconfig | default(omit) }}"
+
+- name: "Render backend Deployment manifest"
+  template:
+    src: "backend-deployment.yaml.j2"
+    dest: "{{ playbook_dir }}/.rendered/backend-deployment.yaml"
+  notify: Apply Kubernetes manifests
+
+- name: "Render backend Service manifest"
+  template:
+    src: "backend-service.yaml.j2"
+    dest: "{{ playbook_dir }}/.rendered/backend-service.yaml"
+  notify: Apply Kubernetes manifests
+
+- name: "Render backend HPA manifest"
+  template:
+    src: "backend-hpa.yaml.j2"
+    dest: "{{ playbook_dir }}/.rendered/backend-hpa.yaml"
+  notify: Apply Kubernetes manifests
+
+- name: "Render backend PDB manifest"
+  template:
+    src: "backend-pdb.yaml.j2"
+    dest: "{{ playbook_dir }}/.rendered/backend-pdb.yaml"
+  notify: Apply Kubernetes manifests
+
+- name: "Render backend Ingress manifest"
+  template:
+    src: "backend-ingress.yaml.j2"
+    dest: "{{ playbook_dir }}/.rendered/backend-ingress.yaml"
+  notify: Apply Kubernetes manifests
+
+- name: "Wait for Deployment to be available"
+  kubernetes.core.k8s_info:
+    api_version: apps/v1
+    kind: Deployment
+    name: backend
+    kubeconfig: "{{ k8s_kubeconfig | default(omit) }}"
+  register: deploy_info
+  until: >
+    deploy_info.resources | length > 0 and
+    (deploy_info.resources[0].status.availableReplicas | default(0)) >=
+    (deploy_info.resources.spec.replicas | default(1))
+  retries: 30
+  delay: 10
