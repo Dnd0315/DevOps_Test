@@ -12,6 +12,9 @@ jobs:
       id-token: write
       contents: read
     steps:
+      - name: Check RUNNER_TOOL_CACHE
+        run: echo "RUNNER_TOOL_CACHE=$RUNNER_TOOL_CACHE"
+      
       - name: Checkout
         uses: actions/checkout@v4
 
