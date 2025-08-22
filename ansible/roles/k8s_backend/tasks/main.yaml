@@ -8,6 +8,12 @@
   set_fact:
     k8s_kubeconfig: "{{ k8s_kubeconfig | default(lookup('env','KUBECONFIG')) }}"
 
+- name: Render namespace
+  template:
+    src: "backend-namespace.yaml.j2"
+    dest: "{{ playbook_dir }}/.rendered/backend-namespace.yaml"
+    mode: "0644"
+
 - name: Ensure namespace exists
   kubernetes.core.k8s:
     api_version: v1

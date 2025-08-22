@@ -2,7 +2,7 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 meta
   name: backend-hpa
-  namespace: {{ k8s_namespace }}
+  namespace: {{ k8s_namespace | default('test') }}
   labels:
     app: {{ labels.app | default('backend') }}
 spec:

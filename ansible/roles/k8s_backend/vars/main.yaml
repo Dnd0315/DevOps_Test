@@ -1,5 +1,5 @@
 # Target namespace (can be overridden by the inventory)
-k8s_namespace: "default"
+k8s_namespace: "test"
 
 # Text passed to the http-echo container argument (-text=...)
 hello_text: "Hello, World!"
@@ -43,6 +43,7 @@ service:
 # Ingress configuration
 ingress:
   enabled: true
+  className: "nginx"
   name: "backend-ingress"
   path: "/api"
   pathType: "Prefix"

@@ -2,6 +2,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: backend-servicemonitor
+  namespace: test
   labels:
     release: prometheus         
 spec:
@@ -9,7 +10,7 @@ spec:
     matchLabels:
       app: backend
   namespaceSelector:
-    matchNames: [ "default" ]
+    matchNames: [ "test" ]
   endpoints:
     - port: metrics
       path: /metrics

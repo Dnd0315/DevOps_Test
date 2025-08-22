@@ -2,10 +2,11 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ ingress.name | default("backend-ingress") }}
-  namespace: {{ k8s_namespace }}
+  namespace: {{ k8s_namespace | default('test') }}
   labels:
     app: {{ labels.app | default('backend') }}
 spec:
+  ingressClassName: {{ ingress.className | default("nginx") }}
   rules:
     - http:
         paths:

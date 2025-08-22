@@ -2,7 +2,7 @@ apiVersion: policy/v1
 kind: PodDisruptionBudget
 meta
   name: backend-pdb
-  namespace: {{ k8s_namespace }}
+  namespace: {{ k8s_namespace | default('test') }}
   labels:
     app: {{ labels.app | default('backend') }}
 spec:
