@@ -1,37 +1,37 @@
-name: Deploy with Ansible
+name: Deploy Backend Microservice
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: self-hosted
-    permissions:
-      id-token: write
-      contents: read
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
 
-      - name: Set up Python
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: 3.11
 
-      - name: Install Ansible and dependecies
+      - name: Create and activate virtual environment, install dependencies
+        shell: bash
         run: |
-          python -m pip install --upgrade pip
-          pip install "ansible>=8.0.0"
-          pip install kubernetes
-          ansible-galaxy collection install kubernetes.core
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install ansible kubernetes
 
-      - name: Validate cluster access
+      - name: Run Ansible playbook for Kubernetes deployment
+        shell: bash
         run: |
-          kubectl version
-          kubectl get nodes
+          source venv/bin/activate
+          ansible-playbook ansible/playbook.yaml -i inventories/dev/hosts.ini --extra-vars "ansible_python_interpreter=$(pwd)/venv/bin/python"
 
-      - name: Deploy to dev
-        run: |
-          ansible-playbook -i ansible/inventories/dev/hosts.ini ansible/playbook.yaml --extra-vars "ansible_python_interpreter=/opt/homebrew/opt/python@3.13/bin/python3.13"
+      - name: Deployment completed message
+        run: echo "Deployment finished successfully!"
