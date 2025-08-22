@@ -8,6 +8,8 @@ on:
 jobs:
   deploy:
     runs-on: self-hosted
+    env:
+      RUNNER_TOOL_CACHE: /Users/airdnd/github_actions_cache
     permissions:
       id-token: write
       contents: read
