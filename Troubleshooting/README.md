@@ -1,4 +1,4 @@
-# README — Troubleshooting and Design Notes
+# Troubleshooting & Optimization 
 
 ## Troubleshooting Guide
 

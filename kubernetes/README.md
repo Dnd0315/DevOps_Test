@@ -1,4 +1,4 @@
-# Backend on Kubernetes — Complete README
+# Backend on Kubernetes
 
 ## Overview
 
@@ -38,10 +38,10 @@ kubectl apply -f backend-service.yaml
 kubectl apply -f backend-hpa.yaml
 
 # PDB
-kubectl apply -f k8s/backend-pdb.yaml
+kubectl apply -f backend-pdb.yaml
 
 # Ingress (requires an Ingress controller)
-kubectl apply -f k8s/backend-ingress.yaml
+kubectl apply -f backend-ingress.yaml
 ```
 
 3) Verify rollout
@@ -65,9 +65,6 @@ curl http://localhost:18080/api
 kubectl -n ingress-nginx port-forward svc/ingress-nginx-controller 8081:80
 curl http://localhost:8081/api
 
-# If the Ingress uses a host (e.g., api.local)
-echo "127.0.0.1 api.local" | sudo tee -a /etc/hosts
-curl -H "Host: api.local" http://localhost:8081/api
 ```
 
 ## Install an Ingress Controller (NGINX)
@@ -96,7 +93,7 @@ Notes:
 - Ensure your Ingress includes spec.ingressClassName: nginx.
 - Ingress and Service must be in the same namespace.
 
-## Install Metrics Server (for HPA)
+## Install Metrics Server (for HPA) (!) TODO : Still got a issue with the Metrics Server
 
 If HPA shows “unknown” metrics or doesn’t scale:
 ```bash
