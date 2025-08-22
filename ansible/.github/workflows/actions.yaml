@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     permissions:
       id-token: write
       contents: read
@@ -25,14 +25,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install "ansible>=8.0.0"
           ansible-galaxy collection install kubernetes.core
-
-      # If using a kubeconfig secret (simple approach)
-      - name: Configure kubeconfig
-        run: |
-          mkdir -p $HOME/.kube
-          echo "${KUBECONFIG_BASE64}" | base64 -d > $HOME/.kube/config
-        env:
-          KUBECONFIG_BASE64: ${{ secrets.KUBECONFIG_BASE64 }}
 
       - name: Validate cluster access
         run: |
