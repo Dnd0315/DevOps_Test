@@ -22,13 +22,13 @@ This document outlines the key decisions and assumptions made during the design 
 
 ## Quick Start: Deploy with kubectl
 
-1) Apply the Namespace
+1. Apply the Namespace
 ```bash
 kubectl apply -f backend-namespace.yaml
 # Or: kubectl create namespace test
 ```
 
-2) Apply application resources
+2. Apply application resources
 ```bash
 # Deployment + Service
 kubectl apply -f backend-deployment.yaml
@@ -44,14 +44,14 @@ kubectl apply -f backend-pdb.yaml
 kubectl apply -f backend-ingress.yaml
 ```
 
-3) Verify rollout
+3. Verify rollout
 ```bash
 kubectl get deploy,svc,hpa,pdb,ingress -n test
 kubectl rollout status deployment/backend -n test
 kubectl describe svc/backend-svc -n test
 ```
 
-4) Test the application
+4. Test the application
 
 - Directly via Service (port-forward):
 ```bash
@@ -69,18 +69,18 @@ curl http://localhost:8081/api
 
 ## Install an Ingress Controller (NGINX)
 
-1) Install NGINX Ingress Controller
+1. Install NGINX Ingress Controller
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/cloud/deploy.yaml
 ```
 
-2) Wait for controller readiness
+2. Wait for controller readiness
 ```bash
 kubectl -n ingress-nginx get pods
 # Wait until ingress-nginx-controller is Running
 ```
 
-3) Expose controller locally (choose a free port)
+3. Expose controller locally (choose a free port)
 ```bash
 kubectl -n ingress-nginx port-forward svc/ingress-nginx-controller 8081:80
 # Test:
@@ -93,21 +93,53 @@ Notes:
 - Ensure your Ingress includes spec.ingressClassName: nginx.
 - Ingress and Service must be in the same namespace.
 
-## Install Metrics Server (for HPA) (!) TODO : Still got a issue with the Metrics Server
+## Install Metrics Server (for HPA)
 
 If HPA shows “unknown” metrics or doesn’t scale:
 ```bash
 kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
 kubectl get apiservices | grep metrics
 ```
+***
+
+### Fix for Metrics Server CrashLoopBackOff and Namespace Terminating Issue
+
+If you encounter that namespaces remain stuck in `Terminating` status due to Metrics Server issues, follow these steps to fix the Metrics Server deployment:
+
+1. **Edit the Metrics Server deployment** to add the following arguments to the container:
+
+```bash
+kubectl edit deployment metrics-server -n kube-system
+```
+
+Add under `spec.template.spec.containers.args`:
+
+```yaml
+- --kubelet-insecure-tls
+- --kubelet-preferred-address-types=InternalIP,Hostname,InternalDNS,ExternalDNS,ExternalIP
+```
+
+2. **Save and exit** the editor. The deployment will restart the pods with the new flags.
+
+3. **Verify pods status**:
+
+```bash
+kubectl get pods -n kube-system | grep metrics-server
+```
+
+The crashing pod should now run correctly.
+
+4. **After the Metrics Server is healthy**, namespace deletions that were stuck due to stale API group discovery errors should proceed normally.
+
+***
 
 ## Optional Monitoring: Prometheus Operator (kube-prometheus-stack)
 
 ServiceMonitor is a Custom Resource. To use it, install kube-prometheus-stack which provides Prometheus Operator and CRDs.
 
-1) Install Helm (macOS: brew install helm)
+1. Install Helm (macOS: brew install helm)
 
-2) Add repo and install the stack
+2. Add repo and install the stack
 ```bash
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo update
@@ -115,7 +147,7 @@ kubectl create namespace monitoring
 helm install monitoring prometheus-community/kube-prometheus-stack -n monitoring
 ```
 
-3) Docker Desktop note: node-exporter may crash due to mount propagation. Easiest fix is to disable node-exporter:
+3. Docker Desktop note: node-exporter may crash due to mount propagation. Easiest fix is to disable node-exporter:
 ```bash
 helm upgrade monitoring prometheus-community/kube-prometheus-stack -n monitoring -f - <<EOF
 nodeExporter:
@@ -123,17 +155,17 @@ nodeExporter:
 EOF
 ```
 
-4) Confirm CRDs
+4. Confirm CRDs
 ```bash
 kubectl get crd | grep servicemonitors.monitoring.coreos.com
 ```
 
-5) Apply the ServiceMonitor (adjust label “release” to your Helm release, e.g., monitoring)
+5. Apply the ServiceMonitor (adjust label “release” to your Helm release, e.g., monitoring)
 ```bash
 kubectl apply -f k8s/backend-servicemonitor.yaml
 ```
 
-6) Check Prometheus targets but the app does not expose metrics
+6. Check Prometheus targets but the app does not expose metrics
 ```bash
 kubectl -n monitoring port-forward svc/monitoring-kube-prometheus-prometheus 9090:9090
 # Open http://localhost:9090 > Status > Targets
