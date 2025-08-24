@@ -26,7 +26,7 @@ ansible-galaxy collection install kubernetes.core
 ## Run the Playbook
 
 ```bash
-ansible-playbook -i ansible/inventories/dev/hosts.ini ansible/playbook.yaml
+ansible-playbook -i inventories/dev/hosts.ini playbook.yaml
 ```
 
 ## What This Does
