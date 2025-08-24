@@ -47,22 +47,16 @@ kubectl apply -f backend-ingress.yaml
 3. Verify rollout
 ```bash
 kubectl get deploy,svc,hpa,pdb,ingress -n test
-kubectl rollout status deployment/backend -n test
-kubectl describe svc/backend-svc -n test
+kubectl rollout status deployment/backend-deployment -n test
+kubectl describe svc/backend-service -n test
 ```
 
 4. Test the application
 
-- Directly via Service (port-forward):
-```bash
-kubectl -n dev port-forward svc/backend-svc 18080:80
-curl http://localhost:18080/api
-```
-
 - Via Ingress (after installing an Ingress controller, see next section):
 ```bash
 # If 8080 is busy, pick 8081/8888 instead
-kubectl -n ingress-nginx port-forward svc/ingress-nginx-controller 8081:80
+kubectl port-forward svc/ingress-nginx-controller 8081:80 -n ingress-nginx 
 curl http://localhost:8081/api
 
 ```
@@ -76,17 +70,16 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main
 
 2. Wait for controller readiness
 ```bash
-kubectl -n ingress-nginx get pods
+kubectl get pods -n ingress-nginx
 # Wait until ingress-nginx-controller is Running
 ```
 
 3. Expose controller locally (choose a free port)
 ```bash
-kubectl -n ingress-nginx port-forward svc/ingress-nginx-controller 8081:80
+kubectl port-forward svc/ingress-nginx-controller 8081:80 -n ingress-nginx
 # Test:
 curl -i http://localhost:8081/api
-# Or with Host header if your Ingress defines spec.rules.host:
-curl -i -H "Host: api.local" http://localhost:8081/api
+
 ```
 
 Notes:

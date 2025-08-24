@@ -33,6 +33,5 @@ jobs:
           source venv/bin/activate
           ansible-playbook ansible/playbook.yaml -i ansible/inventories/dev/hosts.ini --extra-vars "ansible_python_interpreter=$(pwd)/venv/bin/python"
         
-
       - name: Deployment completed message
         run: echo "Deployment finished successfully!"
